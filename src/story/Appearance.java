@@ -1,3 +1,4 @@
+package story;
 public class Appearance {
     Hair hair;
 

@@ -1,32 +1,36 @@
+package story;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.Math;
 import java.util.Objects;
-import java.util.Scanner;
 
+@XmlRootElement
 public class Character
         extends Creature
-        implements Activity {
+        implements Activity, Comparable<Character> {
 
     private String name;
     private Town town;
     private int height;
-    Appearance appearance;
+    transient private Appearance appearance;
 
 
-    Character(String name, Town town) {
+    public Character(String name, Town town, int height) {
         this.name = name;
         this.town = town;
+        this.height = height;
         this.appearance = new Appearance();
     }
 
-    String getAppearance(){
-        return name + " выглядел так: "+this.appearance.getAppearance();
+    String getAppearance() {
+        return name + " выглядел так: " + this.appearance.getAppearance();
     }
 
-    void setHeight(int height){
+    void setHeight(int height) {
         this.height = height;
     }
 
-    int getHeight(){
+    int getHeight() {
         return height;
     }
 
@@ -52,7 +56,20 @@ public class Character
 
     @Override
     public String toString() {
-        return "Имя: " + name + ". Город: " + town;
+        return "Имя: " + name + ". Город: " + town + ". Рост: " + height;
+    }
+
+    @Override
+    public int compareTo(Character character) {
+        if (height == character.height) {
+            return 0;
+        } else if (height < character.height) {
+            return -1;
+        } else {
+            return 1;
+        }
+
+
     }
 
 
@@ -107,20 +124,20 @@ public class Character
         return phrase;
     }
 
-    public String dance(){
+    public String dance() {
         return name + " танцует.";
     }
 
-    void playHarp(Harp harp) throws GiantHarpException{
+    void playHarp(Harp harp) throws GiantHarpException {
         try {
             harp.play(this);
-        } catch (GiantHarpException e){
+        } catch (GiantHarpException e) {
             System.out.println("Это слишком большая арфа для малышки.");
             harp.playWithLadder(this);
         }
     }
 
-    public String sitOnTree(){
+    public String sitOnTree() {
         return name + " забрался на дерево.";
     }
 

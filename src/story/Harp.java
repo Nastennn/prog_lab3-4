@@ -1,3 +1,4 @@
+package story;
 public class Harp {
     public enum Size{
         Small, Middle, Big, Giant

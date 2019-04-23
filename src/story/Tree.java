@@ -1,3 +1,4 @@
+package story;
 public class Tree implements Plant{
 
     private String name;

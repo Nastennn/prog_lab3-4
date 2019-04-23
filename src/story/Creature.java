@@ -1,5 +1,6 @@
+package story;
 public abstract class Creature {
-    private String name;
+    private transient String name;
 
     void setName(String name){
         this.name = name;

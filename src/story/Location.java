@@ -1,4 +1,4 @@
-
+package story;
 
 public class Location {
     private String locationName;

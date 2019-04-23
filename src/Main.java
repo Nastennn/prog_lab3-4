@@ -1,82 +1,28 @@
-import javax.xml.bind.SchemaOutputResolver;
-import java.util.HashSet;
-import java.util.Scanner;
-
-
 public class Main {
-    public static void main(String[] args) throws RoomOverflowException, GiantHarpException {
+    private static volatile boolean keepRunning = true;
 
-        Location danceFloor = new Location("Танцевальная площадка", 5, "Вокруг танцевальной площадки красовались нарядные палатки. Над площадкой были протянуты веревочки, на которых висели разноцветные фонарики и флажки.");
-        Location stall = new Location("Палатки", 5, "Вокруг танцевальной площадки красовались нарядные палатки. Они сверкали яркими красками, словно пряничные избушки.");
-        Location pergola = new Location("Беседка", 5, "Беседка была украшена цветами. На втором этаже играл оркестр из 10 малышек.");
-        HashSet<Location> locationList = new HashSet<>();
-        locationList.add(danceFloor);
-        locationList.add(stall);
-        locationList.add(pergola);
+    public static void main(String[] args) {
 
-
-        Character Neznaika = new Character("Незнайка", Town.Flower);
-        danceFloor.addCharacter(Neznaika);
-        Character Gvozdik = new Character("Гвоздик", Town.Zmeevka);
-        danceFloor.addCharacter(Gvozdik);
-        Character Shurupchik = new Character("Шурупчик", Town.Zmeevka);
-        danceFloor.addCharacter(Shurupchik);
-        Character Bublik = new Character("Бублик", Town.Zmeevka);
-        stall.addCharacter(Bublik);
-        Character Baby1 = new Character("Первая малышка", Town.Flower);
-        pergola.addCharacter(Baby1);
-        Baby1.setHeight(10);
-        Character Baby2 = new Character("Вторая малышка", Town.Flower);
-        pergola.addCharacter(Baby2);
-        Baby2.setHeight(10);
-        Harp harp1 =new Harp();
-        harp1.setSize(Harp.Size.Giant);
-        Harp harp2 = new Harp();
-        harp2.setSize(Harp.Size.Small);
-
-
-        // Нет стремянки, добавить, стремянкой добавлять рост малышке, малышка может стоять на стремянке, стремянка
-        // объект класса тоНаЧемМожноСтоять, создавать стремянку, ставить малышку, тогда будет возможность
-        // играть на гигантской арфе
-
-
-
-        System.out.println("Начался бал. Прибывают первые гости: ");
-        System.out.println(Neznaika.getAppearance());
-        System.out.println(Neznaika.sitOnTree());
-        System.out.println(Gvozdik.getAppearance());
-        Scanner in = new Scanner(System.in);
-        String txt;
-        boolean isFound = false;
-        do {
-            System.out.println("Выберите локацию: ");
-            for (Location location : locationList) {
-                System.out.print(location.getLocationName() + ", ");
-            }
-            System.out.println("Выйти");
-            txt = in.nextLine();
-            for (Location location : locationList) {
-                if (location.getLocationName().toLowerCase().equals(txt.toLowerCase())) {
-                    System.out.println(location.getDescription());
-                    location.generateEvent();
-                    if(location == pergola){
-                        System.out.println("Малышки взялись за арфы.");
-                        Baby1.playHarp(harp1);
-                        Baby2.playHarp(harp2);
-                    }
-                    isFound = true;
-                    break;
-                }
-            }
+        CollectionManager collectionManager = new CollectionManager();
+        final Thread mainThread = Thread.currentThread();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                if (!isFound && !txt.toLowerCase().equals("выйти")) {
-                    throw new LocationDoesNotExistException("Такой локации не существует");
-                }
-
-            } catch (LocationDoesNotExistException e) {
-                System.out.println("Такой локации не существует!");
+                keepRunning = false;
+                mainThread.join();
+            } catch (InterruptedException e) {
+                System.err.println("Случилась беда :(");
             }
-            isFound = false;
-        } while (!txt.toLowerCase().equals("выйти"));
+        }));
+        CommandExecutor commandExecutor = new CommandExecutor(collectionManager);
+        commandExecutor.getInformation();
+        int readStatus;
+        do {
+            readStatus = commandExecutor.readCommand();
+
+        } while (readStatus != -1 && keepRunning);
+
+        collectionManager.save();
+
     }
+
 }
