@@ -1,9 +1,11 @@
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * @author Nastennn
+ */
 public class CommandExecutor {
-    public enum Commands {add, reorder, info, removeFirst, load, remove, show}
-
+    public String[] Commands = {"add", "reorder", "info", "removeFirst", "load", "remove", "show", "help"};
     private Scanner in = new Scanner(System.in);
     private CollectionManager collectionManager;
 
@@ -11,6 +13,11 @@ public class CommandExecutor {
         this.collectionManager = collectionManager;
     }
 
+    /**
+     * Чтение и парсинг команды
+     *
+     * @return int executeStatus
+     */
     int readCommand() {
         StringBuilder str = new StringBuilder();
         int executeStatus = 0;
@@ -54,6 +61,13 @@ public class CommandExecutor {
         return executeStatus;
     }
 
+    /**
+     * Выполнение команды
+     *
+     * @param cmd Команда для выполнения
+     * @param arg Передаваемый аргумент
+     * @return int Для дальнейшего выполнения
+     */
     private int execute(String cmd, String arg) {
         switch (cmd) {
             case ("add"): {
@@ -84,6 +98,10 @@ public class CommandExecutor {
                 collectionManager.show();
                 break;
             }
+            case ("help"): {
+                getInformation();
+                break;
+            }
             case ("exit"): {
                 return -1;
             }
@@ -95,12 +113,44 @@ public class CommandExecutor {
         return 0;
     }
 
-    void getInformation() {
-        System.out.println("Список доступных команд:");
-        for (Commands command : Commands.values()) {
-            System.out.println(command);
+    /**
+     * Получение информации о командах
+     */
+    private void getInformation() {
+        for (String command : Commands) {
+            switch (command) {
+                case ("add"): {
+                    System.out.println("add - Добавляет элемент в коллекцию.");
+                    break;
+                }
+                case ("reorder"): {
+                    System.out.println("reorder - Сортирует коллекцию в обратном порядке.");
+                    break;
+                }
+                case ("info"): {
+                    System.out.println("info - Выводит информацию о коллекции.");
+                    break;
+                }
+                case ("removeFirst"): {
+                    System.out.println("removeFirst - Удаляет первый элемент коллекции.");
+                    break;
+                }
+                case ("load"): {
+                    System.out.println("load - Перезагружает коллекцию из файла.");
+                    break;
+                }
+                case ("remove"): {
+                    System.out.println("remove - Удаляет элемент из коллекции.");
+                    break;
+                }
+                case ("show"): {
+                    System.out.println("show - Выводит содержимое коллекции.");
+                    break;
+                }
+            }
+
         }
+
+
     }
-
-
 }
