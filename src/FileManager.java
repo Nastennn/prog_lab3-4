@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.Scanner;
 import java.util.Vector;
+
 import com.thoughtworks.xstream.XStream;
 import story.Character;
 
@@ -25,27 +26,28 @@ class FileManager {
      */
     String readFromFile() {
         StringBuilder result = new StringBuilder();
-            boolean isSuccess;
-            do {
-                try {
-                    isSuccess = true;
-                    BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-                    int c;
-                    while ((c = bufferedReader.read()) != -1) {
-                        result.append((char) c);
-                    }
-                } catch (FileNotFoundException e) {
-                    System.err.println("Отказано в доступе.");
-                    System.out.println("Введите путь к другому файлу:");
-                    Scanner in = new Scanner(System.in);
-                    file = new File(in.nextLine());
-                    isSuccess = false;
-                } catch (IOException e) {
-                    isSuccess = false;
+        boolean isSuccess;
+        do {
+            try {
+                isSuccess = true;
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+                int c;
+                while ((c = bufferedReader.read()) != -1) {
+                    result.append((char) c);
                 }
-            } while (!isSuccess);
-            return result.toString();
-        }
+            } catch (FileNotFoundException e) {
+                System.err.println("Отказано в доступе.");
+                System.out.println("Введите путь к другому файлу:");
+                Scanner in = new Scanner(System.in);
+                file = new File(in.nextLine());
+                isSuccess = false;
+            } catch (IOException e) {
+                isSuccess = false;
+            }
+        } while (!isSuccess);
+        return result.toString();
+    }
+
     /**
      * Пишет в файл
      *
@@ -56,8 +58,8 @@ class FileManager {
         FileWriter writer = new FileWriter(this.file);
         writer.write(string);
         writer.close();
-            System.out.println("Файл сохранен.");
-        }
+        System.out.println("Файл сохранен.");
+    }
 
     public void setFile(File file) {
         this.file = file;

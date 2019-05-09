@@ -35,15 +35,16 @@ class CollectionManager {
         this.initDate = new Date();
     }
 
-    boolean checkSource(String source){
+    boolean checkSource(String source) {
         try {
             fileManager.convertFromXML(source);
             return true;
-        }catch(com.thoughtworks.xstream.io.StreamException e){
+        } catch (com.thoughtworks.xstream.io.StreamException e) {
             System.err.println("Данные в файле некорректны.");
             return false;
         }
     }
+
     /**
      * Выводит информацию о коллекции
      */
@@ -66,6 +67,7 @@ class CollectionManager {
 
     /**
      * Добавляет элемент в коллекцию
+     *
      * @param jsonString Строка в формате json
      */
     void add(String jsonString) {
@@ -73,8 +75,8 @@ class CollectionManager {
         try {
             Character ch = gson.fromJson(jsonString, Character.class);
             if (characters.contains(ch)) {
-                System.out.println("Такой элемент уже существует.");}
-            else if(jsonString.equals("")){
+                System.out.println("Такой элемент уже существует.");
+            } else if (jsonString.equals("")) {
                 System.err.println("Необходимо ввести объект.");
             } else {
                 characters.add(ch);
@@ -95,7 +97,8 @@ class CollectionManager {
         } else {
             Collections.reverse(characters);
             System.out.println("Коллекция отсортирована.");
-    }}
+        }
+    }
 
     /**
      * Удаляет первый элемент коллекции
@@ -111,6 +114,7 @@ class CollectionManager {
 
     /**
      * Удаляет указанный элемент коллекции
+     *
      * @param string Элемент коллекции, указанный в формате json
      */
     void remove(String string) {
@@ -144,7 +148,7 @@ class CollectionManager {
      * Сохарняет коллекцию
      */
     void save() {
-        if(characters.size()!=0){
+        if (characters.size() != 0) {
             try {
                 this.fileManager.writeToFile(this.fileManager.convertToXML(characters));
             } catch (IOException e) {
