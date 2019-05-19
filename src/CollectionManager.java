@@ -1,20 +1,18 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import story.Character;
 
 /**
  * @author Nastennn
  */
 class CollectionManager {
-    private Vector<Character> characters = new Vector<>();
+    private Vector<Character> characters;
     private Date initDate;
     private FileManager fileManager;
 
@@ -32,10 +30,11 @@ class CollectionManager {
                 characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
             }
         }
+        characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
         this.initDate = new Date();
     }
 
-    boolean checkSource(String source) {
+    private boolean checkSource(String source) {
         try {
             fileManager.convertFromXML(source);
             return true;
@@ -73,14 +72,14 @@ class CollectionManager {
     void add(String jsonString) {
         Gson gson = new Gson();
         try {
-            Character ch = gson.fromJson(jsonString, Character.class);
-            if (characters.contains(ch)) {
-                System.out.println("Такой элемент уже существует.");
-            } else if (jsonString.equals("")) {
-                System.err.println("Необходимо ввести объект.");
-            } else {
-                characters.add(ch);
-                System.out.println("Элемент добавлен в коллекцию.");
+            Vector<Character> characterVector = gson.fromJson(jsonString, TypeToken.getParameterized(Vector.class, Character.class).getType());
+            for (Character ch : characterVector) {
+                if (characters.contains(ch)) {
+                    System.out.println("Такой элемент уже существует.");
+                } else {
+                    characters.add(ch);
+                    System.out.println("Элемент добавлен в коллекцию.");
+                }
             }
             Collections.sort(characters);
         } catch (IllegalStateException | JsonSyntaxException | NullPointerException e) {
@@ -115,18 +114,20 @@ class CollectionManager {
     /**
      * Удаляет указанный элемент коллекции
      *
-     * @param string Элемент коллекции, указанный в формате json
+     * @param jsonString Элемент коллекции, указанный в формате json
      */
-    void remove(String string) {
+    void remove(String jsonString) {
         Gson gson = new Gson();
         try {
-            Character ch = gson.fromJson(string, Character.class);
-            if (characters.contains(ch)) {
-                characters.remove(ch);
-            } else {
-                System.out.println("В коллекции нет такого элемента.");
+            Vector<Character> characterVector = gson.fromJson(jsonString, TypeToken.getParameterized(Vector.class, Character.class).getType());
+            for (Character ch : characterVector) {
+                if (characters.contains(ch)) {
+                    characters.remove(ch);
+                    System.out.println("Элемент удален.");
+                } else {
+                    System.out.println("В коллекции нет такого элемента.");
+                }
             }
-            System.out.println("Элемент удален.");
         } catch (IllegalStateException | JsonSyntaxException e) {
             System.out.println("Элемент введен неверно.");
         }
@@ -151,6 +152,7 @@ class CollectionManager {
         if (characters.size() != 0) {
             try {
                 this.fileManager.writeToFile(this.fileManager.convertToXML(characters));
+                System.out.println("Коллекция сохранена.");
             } catch (IOException e) {
                 System.err.println("Не удалось записать в файл.");
             }

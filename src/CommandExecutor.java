@@ -1,11 +1,14 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
  * @author Nastennn
  */
-public class CommandExecutor {
-    public String[] Commands = {"add", "reorder", "info", "removeFirst", "load", "remove", "show", "help"};
+class CommandExecutor {
+    private String[] Commands = {"add", "reorder", "info", "removeFirst", "load", "remove", "show", "help", "save"};
+    private ArrayList<String> jsonCommands = new ArrayList<>(Arrays.asList("add", "remove"));
     private Scanner in = new Scanner(System.in);
     private CollectionManager collectionManager;
 
@@ -23,35 +26,40 @@ public class CommandExecutor {
         int executeStatus = 0;
         System.out.println("Введите команду:");
         try {
-            do {
-                str.append(in.nextLine());
-            } while ((str.length() - str.toString().replaceAll("\\{", "").length()) >
-                    (str.length() - str.toString().replaceAll("}", "").length()));
-            str = new StringBuilder(str.toString().trim());
+            String nextLine;
+            nextLine = in.nextLine();
+            str.append(nextLine);
+            if (jsonCommands.contains(nextLine.split(" ", 2)[0])){
+                while (in.hasNextLine()){
+                    nextLine = in.nextLine();
+                    if (nextLine.equals("")){
+                        break;
+                    }
+                    str.append(nextLine);
+                }
+            }
+
+            str = new StringBuilder(str.toString());
             if (!str.toString().equals("")) {
                 String[] words = str.toString().split(" ", 2);
                 String cmd = words[0];
-                String arg = null;
+                String arg;
                 if (words.length > 1) {
                     arg = words[1];
-                    String[] args = arg.split("}");
-                    for (int i = 0; i < args.length; i++) {
-                        args[i] += "}";
-
+                    arg = arg.trim();
+                    if (!arg.startsWith("[")) {
+                        arg = "[" + arg;
+                    }
+                    if (!arg.endsWith("]")){
+                        arg = arg + "]";
                     }
 
-                    if (args.length > 1) {
-                        for (String s : args) {
-                            arg = s.trim();
-                            executeStatus = execute(cmd, arg);
-                        }
-                    } else {
-                        executeStatus = execute(cmd, arg);
-                    }
+                    executeStatus = execute(cmd, arg);
+                } else if (jsonCommands.contains(cmd)){
+                    System.err.println("Этой команде нужно передать аругмент");
                 } else {
                     executeStatus = execute(cmd, null);
                 }
-
             }
         } catch (NoSuchElementException e) {
             System.err.println("EOF");
@@ -102,6 +110,10 @@ public class CommandExecutor {
                 getInformation();
                 break;
             }
+            case ("save"): {
+                collectionManager.save();
+                break;
+            }
             case ("exit"): {
                 return -1;
             }
@@ -145,6 +157,10 @@ public class CommandExecutor {
                 }
                 case ("show"): {
                     System.out.println("show - Выводит содержимое коллекции.");
+                    break;
+                }
+                case ("save"): {
+                    System.out.println("save - сохраняет коллекцию в файл.");
                     break;
                 }
             }

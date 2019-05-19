@@ -15,8 +15,44 @@ class FileManager {
         try {
             file = new File(System.getenv("LAB_5_FILE"));
         } catch (NullPointerException e) {
-            System.err.println("Такого файла не существует.");
+            System.err.println("Такого файла не существует, либо не введна переменная окружения.");
+            file = getFileFromUser();
         }
+    }
+
+    private File getFileFromUser() {
+        while(true) {
+            System.out.println("Введите путь к файлу:");
+            Scanner in = new Scanner(System.in);
+            file = new File(in.nextLine());
+            if (checkFile(file)) {
+                return file;
+            }
+        }
+    }
+
+    private boolean checkFile(File file) {
+        if (!file.exists()) {
+            try {
+                return file.createNewFile();
+            } catch (IOException e) {
+                System.err.println("Не получилось создать новый файл по переданному пути.");
+                return false;
+            }
+        }
+        if (!file.isFile()) {
+            System.err.println("Это не файл.");
+            return false;
+        }
+        if (!file.canRead()) {
+            System.err.println("Не удается прочитать файл.");
+            return false;
+        }
+        if (!file.canWrite()) {
+            System.err.println("Невозможно записать в файл.");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -26,25 +62,15 @@ class FileManager {
      */
     String readFromFile() {
         StringBuilder result = new StringBuilder();
-        boolean isSuccess;
-        do {
             try {
-                isSuccess = true;
                 BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
                 int c;
                 while ((c = bufferedReader.read()) != -1) {
                     result.append((char) c);
                 }
-            } catch (FileNotFoundException e) {
-                System.err.println("Отказано в доступе.");
-                System.out.println("Введите путь к другому файлу:");
-                Scanner in = new Scanner(System.in);
-                file = new File(in.nextLine());
-                isSuccess = false;
             } catch (IOException e) {
-                isSuccess = false;
+                System.err.println("Ошибка при чтении из файла");
             }
-        } while (!isSuccess);
         return result.toString();
     }
 
@@ -61,7 +87,7 @@ class FileManager {
         System.out.println("Файл сохранен.");
     }
 
-    public void setFile(File file) {
+    void setFile(File file) {
         this.file = file;
     }
 
