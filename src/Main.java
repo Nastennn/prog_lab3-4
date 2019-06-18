@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * @author Nastennn
  */
@@ -5,8 +7,13 @@
 public class Main {
     private static volatile boolean keepRunning = true;
 
-    public static void main(String[] args) {
-        CollectionManager collectionManager = new CollectionManager();
+    public static void main(String[] args) throws IOException {
+        ConnectionManager connectionManager = new ConnectionManager();
+        connectionManager.startServer();
+
+
+
+       /* CollectionManager collectionManager = new CollectionManager();
         final Thread mainThread = Thread.currentThread();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -23,6 +30,6 @@ public class Main {
             readStatus = commandExecutor.readCommand();
 
         } while (readStatus != -1 && keepRunning);
-        collectionManager.save();
+        collectionManager.save(); */
     }
 }

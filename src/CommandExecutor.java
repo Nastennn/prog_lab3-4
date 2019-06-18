@@ -58,7 +58,7 @@ class CommandExecutor {
                 } else if (jsonCommands.contains(cmd)){
                     System.err.println("Этой команде нужно передать аругмент");
                 } else {
-                    executeStatus = execute(cmd, null);
+                    executeStatus = execute(cmd);
                 }
             }
         } catch (NoSuchElementException e) {
@@ -82,6 +82,20 @@ class CommandExecutor {
                 collectionManager.add(arg);
                 break;
             }
+            case ("remove"): {
+                collectionManager.remove(arg);
+                break;
+            }
+            default: {
+                System.out.println("Такой команды не существует.");
+                readCommand();
+            }
+        }
+        return 0;
+    }
+
+    private int execute(String cmd) {
+        switch (cmd) {
             case ("reorder"): {
                 collectionManager.reorder();
                 break;
@@ -96,10 +110,6 @@ class CommandExecutor {
             }
             case ("load"): {
                 collectionManager.load();
-                break;
-            }
-            case ("remove"): {
-                collectionManager.remove(arg);
                 break;
             }
             case ("show"): {

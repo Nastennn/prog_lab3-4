@@ -47,20 +47,18 @@ class CollectionManager {
     /**
      * Выводит информацию о коллекции
      */
-    void info() {
-        System.out.println("Коллекция типа: " + characters.getClass());
-        System.out.println("Время инициализации коллекции: " + initDate);
-        System.out.println("Количество элементов в коллекции: " + characters.size());
+    String info() {
+        return "Коллекция типа: " + characters.getClass() + "\nВремя инициализации коллекции: " + initDate + "\nКоличество элементов в коллекции: " + characters.size();
     }
 
     /**
      * Выводит элементы коллекции
      */
-    void show() {
+    String show() {
         if (characters.isEmpty()) {
-            System.out.println("Коллекция пуста.");
+            return "Коллекция пуста.";
         } else {
-            System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(characters));
+            return new GsonBuilder().setPrettyPrinting().create().toJson(characters);
         }
     }
 
@@ -69,45 +67,46 @@ class CollectionManager {
      *
      * @param jsonString Строка в формате json
      */
-    void add(String jsonString) {
+    String add(String jsonString) {
         Gson gson = new Gson();
         try {
             Vector<Character> characterVector = gson.fromJson(jsonString, TypeToken.getParameterized(Vector.class, Character.class).getType());
             for (Character ch : characterVector) {
                 if (characters.contains(ch)) {
-                    System.out.println("Такой элемент уже существует.");
+                    return "Такой элемент уже существует.";
                 } else {
                     characters.add(ch);
-                    System.out.println("Элемент добавлен в коллекцию.");
+                    return "Элемент добавлен в коллекцию.";
                 }
             }
             Collections.sort(characters);
         } catch (IllegalStateException | JsonSyntaxException | NullPointerException e) {
-            System.err.println("Элемент введен неверно.");
+            return "Элемент введен неверно.";
         }
+        return "И как же это вообще вылезло?";
     }
 
     /**
      * Сортирует коллекцию в обратном порядке
      */
-    void reorder() {
+    String reorder() {
         if (characters.isEmpty()) {
-            System.out.println("Коллекция пуста.");
+            return "Коллекция пуста.";
         } else {
             Collections.reverse(characters);
-            System.out.println("Коллекция отсортирована.");
+            return "Коллекция отсортирована.";
         }
     }
 
     /**
      * Удаляет первый элемент коллекции
      */
-    void removeFirst() {
+    String removeFirst() {
         if (characters.isEmpty()) {
-            System.out.println("Невозможно удалить первый элемент. Коллекция пуста.");
+            return "Невозможно удалить первый элемент. Коллекция пуста.";
         } else {
             characters.remove(0);
-            System.out.println("Первый элемент удален.");
+            return "Первый элемент удален.";
         }
     }
 
@@ -116,48 +115,50 @@ class CollectionManager {
      *
      * @param jsonString Элемент коллекции, указанный в формате json
      */
-    void remove(String jsonString) {
+    String remove(String jsonString) {
         Gson gson = new Gson();
         try {
             Vector<Character> characterVector = gson.fromJson(jsonString, TypeToken.getParameterized(Vector.class, Character.class).getType());
             for (Character ch : characterVector) {
                 if (characters.contains(ch)) {
                     characters.remove(ch);
-                    System.out.println("Элемент удален.");
+                    return "Элемент удален.";
                 } else {
-                    System.out.println("В коллекции нет такого элемента.");
+                    return "В коллекции нет такого элемента.";
                 }
             }
         } catch (IllegalStateException | JsonSyntaxException e) {
-            System.out.println("Элемент введен неверно.");
+            return "Элемент введен неверно.";
         }
+        return "";
     }
 
     /**
      * Перезагружает коллекцию из файла
      */
-    void load() {
+    String load() {
         try {
             characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
+            return "Файл перезагружен";
         } catch (com.thoughtworks.xstream.io.StreamException e) {
-            System.err.println("Пустой файл.");
             characters = new Vector<>();
+            return "Пустой файл.";
         }
     }
 
     /**
      * Сохарняет коллекцию
      */
-    void save() {
+    String save() {
         if (characters.size() != 0) {
             try {
                 this.fileManager.writeToFile(this.fileManager.convertToXML(characters));
-                System.out.println("Коллекция сохранена.");
+                return "Коллекция сохранена.";
             } catch (IOException e) {
-                System.err.println("Не удалось записать в файл.");
+                return "Не удалось записать в файл.";
             }
         }
-
+        return "";
     }
 
 }

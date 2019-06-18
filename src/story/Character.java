@@ -1,25 +1,33 @@
 package story;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.lang.Math;
+import java.util.Date;
 import java.util.Objects;
 
 @XmlRootElement
 public class Character
         extends Creature
-        implements Activity, Comparable<Character> {
+        implements Activity, Comparable<Character>, Serializable {
 
     private String name;
     private Town town;
     private int height;
     transient private Appearance appearance;
+    private double x;
+    private double y;
+    private Date dateOfBirth;
 
 
-    public Character(String name, Town town, int height) {
+    public Character(String name, Town town, int height, double x, double y) {
         this.name = name;
         this.town = town;
         this.height = height;
         this.appearance = new Appearance();
+        this.x=x;
+        this.y =y;
+        dateOfBirth = new Date();
     }
 
     String getAppearance() {
@@ -61,15 +69,7 @@ public class Character
 
     @Override
     public int compareTo(Character character) {
-        if (height == character.height) {
-            return 0;
-        } else if (height < character.height) {
-            return -1;
-        } else {
-            return 1;
-        }
-
-
+      return this.name.compareTo(character.name);
     }
 
 

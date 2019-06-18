@@ -14,7 +14,7 @@ public class Main {
         locationList.add(pergola);
 
 
-        Character Neznaika = new Character("Незнайка", Town.Flower, 70);
+       /* Character Neznaika = new Character("Незнайка", Town.Flower, 70);
         danceFloor.addCharacter(Neznaika);
         Character Gvozdik = new Character("Гвоздик", Town.Zmeevka, 66);
         danceFloor.addCharacter(Gvozdik);
@@ -30,7 +30,7 @@ public class Main {
         harp1.setSize(Harp.Size.Giant);
         Harp harp2 = new Harp();
         harp2.setSize(Harp.Size.Small);
-
+*/
 
 
 
