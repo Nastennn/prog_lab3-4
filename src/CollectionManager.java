@@ -27,10 +27,10 @@ class CollectionManager {
                 System.out.println("Введите путь к другому файлу:");
                 Scanner in = new Scanner(System.in);
                 this.fileManager.setFile(new File(in.nextLine()));
-                characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
+                // characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
             }
+            characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
         }
-        // characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
         this.initDate = new Date();
     }
 
@@ -86,22 +86,22 @@ class CollectionManager {
         return "И как же это вообще вылезло?";
     }
 
-    String add(Character character) {
-        try {
-            for (Character ch : characters) {
-                if (characters.contains(ch)) {
-                    return "Такой элемент уже существует.";
-                } else {
-                    characters.add(ch);
-                    return "Элемент добавлен в коллекцию.";
-                }
-            }
-            Collections.sort(characters);
-        } catch (IllegalStateException | NullPointerException e) {
-            return "Элемент введен неверно.";
-        }
-        return "И как же это вообще вылезло?";
-    }
+//    String add(Character character) {
+//        try {
+//            for (Character ch : characters) {
+//                if (characters.contains(ch)) {
+//                    return "Такой элемент уже существует.";
+//                } else {
+//                    characters.add(ch);
+//                    return "Элемент добавлен в коллекцию.";
+//                }
+//            }
+//            Collections.sort(characters);
+//        } catch (IllegalStateException | NullPointerException e) {
+//            return "Элемент введен неверно.";
+//        }
+//        return "И как же это вообще вылезло?";
+//    }
 
     /**
      * Сортирует коллекцию в обратном порядке

@@ -76,7 +76,7 @@ class CommandExecutor {
      * @param arg Передаваемый аргумент
      * @return int Для дальнейшего выполнения
      */
-    private int execute(String cmd, Character character) {
+    private int execute(String cmd, String arg) {
         switch (cmd) {
             case ("add"): {
                 collectionManager.add(arg);
