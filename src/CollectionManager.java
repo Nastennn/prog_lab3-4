@@ -30,7 +30,7 @@ class CollectionManager {
                 characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
             }
         }
-        characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
+        // characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
         this.initDate = new Date();
     }
 
@@ -86,6 +86,23 @@ class CollectionManager {
         return "И как же это вообще вылезло?";
     }
 
+    String add(Character character) {
+        try {
+            for (Character ch : characters) {
+                if (characters.contains(ch)) {
+                    return "Такой элемент уже существует.";
+                } else {
+                    characters.add(ch);
+                    return "Элемент добавлен в коллекцию.";
+                }
+            }
+            Collections.sort(characters);
+        } catch (IllegalStateException | NullPointerException e) {
+            return "Элемент введен неверно.";
+        }
+        return "И как же это вообще вылезло?";
+    }
+
     /**
      * Сортирует коллекцию в обратном порядке
      */
@@ -128,6 +145,22 @@ class CollectionManager {
                 }
             }
         } catch (IllegalStateException | JsonSyntaxException e) {
+            return "Элемент введен неверно.";
+        }
+        return "";
+    }
+
+    String remove(Character character) {
+        try {
+            for (Character ch : characters) {
+                if (characters.contains(ch)) {
+                    characters.remove(ch);
+                    return "Элемент удален.";
+                } else {
+                    return "В коллекции нет такого элемента.";
+                }
+            }
+        } catch (IllegalStateException e) {
             return "Элемент введен неверно.";
         }
         return "";

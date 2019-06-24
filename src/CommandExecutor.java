@@ -21,27 +21,27 @@ class CommandExecutor {
      *
      * @return int executeStatus
      */
-    int readCommand() {
+    int readCommand(String message) {
         StringBuilder str = new StringBuilder();
         int executeStatus = 0;
-        System.out.println("Введите команду:");
+        //System.out.println("Введите команду:");
         try {
-            String nextLine;
-            nextLine = in.nextLine();
-            str.append(nextLine);
-            if (jsonCommands.contains(nextLine.split(" ", 2)[0])){
-                while (in.hasNextLine()){
-                    nextLine = in.nextLine();
-                    if (nextLine.equals("")){
-                        break;
-                    }
-                    str.append(nextLine);
-                }
-            }
+//            String nextLine;
+//            nextLine = in.nextLine();
+//            str.append(nextLine);
+//            if (jsonCommands.contains(cmd.split(" ", 2)[0])){
+//                while (in.hasNextLine()){
+//                    nextLine = in.nextLine();
+//                    if (nextLine.equals("")){
+//                        break;
+//                    }
+//                    str.append(nextLine);
+//                }
+//            }
 
-            str = new StringBuilder(str.toString());
-            if (!str.toString().equals("")) {
-                String[] words = str.toString().split(" ", 2);
+           // str = cmd;
+            if (!message.equals("")) {
+                String[] words = message.split(" ", 2);
                 String cmd = words[0];
                 String arg;
                 if (words.length > 1) {
@@ -76,7 +76,7 @@ class CommandExecutor {
      * @param arg Передаваемый аргумент
      * @return int Для дальнейшего выполнения
      */
-    private int execute(String cmd, String arg) {
+    private int execute(String cmd, Character character) {
         switch (cmd) {
             case ("add"): {
                 collectionManager.add(arg);
@@ -88,7 +88,7 @@ class CommandExecutor {
             }
             default: {
                 System.out.println("Такой команды не существует.");
-                readCommand();
+                //readCommand();
             }
         }
         return 0;
@@ -128,8 +128,8 @@ class CommandExecutor {
                 return -1;
             }
             default: {
-                System.out.println("Такой команды не существует.");
-                readCommand();
+                System.out.println("Такой команды не существует 1.");
+                //readCommand();
             }
         }
         return 0;
