@@ -1,12 +1,14 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import story.Character;
+import story.CharacterComparator;
 
 /**
  * @author Nastennn
@@ -15,6 +17,10 @@ class CollectionManager {
     private Vector<Character> characters;
     private Date initDate;
     private FileManager fileManager;
+    private  DatabaseConnect connectionDB;
+    private String userHash;
+    Writer writer;
+    Reader reader;
 
     CollectionManager() {
         this.fileManager = new FileManager();
@@ -32,7 +38,16 @@ class CollectionManager {
             characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
         }
         this.initDate = new Date();
+        connectionDB = new DatabaseConnect();
+        writer = new Writer(connectionDB.getConnection());
+        reader = new Reader(connectionDB.getConnection());
     }
+
+
+    void setUserHash(String userHash) {
+        this.userHash = userHash;
+    }
+
 
     private boolean checkSource(String source) {
         try {
@@ -55,115 +70,65 @@ class CollectionManager {
      * Выводит элементы коллекции
      */
     String show() {
-        if (characters.isEmpty()) {
+        if (reader.checkIfTableIsEmpty()) {
             return "Коллекция пуста.";
         } else {
-            return new GsonBuilder().setPrettyPrinting().create().toJson(characters);
+            String result = reader.show();
+            return result;
         }
     }
 
-    /**
-     * Добавляет элемент в коллекцию
-     *
-     * @param jsonString Строка в формате json
-     */
-    String add(String jsonString) {
-        Gson gson = new Gson();
+
+    String add(Character character) {
         try {
-            Vector<Character> characterVector = gson.fromJson(jsonString, TypeToken.getParameterized(Vector.class, Character.class).getType());
-            for (Character ch : characterVector) {
-                if (characters.contains(ch)) {
-                    return "Такой элемент уже существует.";
-                } else {
-                    characters.add(ch);
-                    return "Элемент добавлен в коллекцию.";
-                }
+            if (reader.checkIfCharacterExists(character)) {
+                return "Такой элемент уже существует.";
+            } else {
+                //characters.add(character);
+                //sort();
+                return writer.addCharacter(character, userHash);
             }
-            Collections.sort(characters);
-        } catch (IllegalStateException | JsonSyntaxException | NullPointerException e) {
+        } catch (IllegalStateException | NullPointerException e) {
+            e.printStackTrace();
             return "Элемент введен неверно.";
         }
-        return "И как же это вообще вылезло?";
     }
-
-//    String add(Character character) {
-//        try {
-//            for (Character ch : characters) {
-//                if (characters.contains(ch)) {
-//                    return "Такой элемент уже существует.";
-//                } else {
-//                    characters.add(ch);
-//                    return "Элемент добавлен в коллекцию.";
-//                }
-//            }
-//            Collections.sort(characters);
-//        } catch (IllegalStateException | NullPointerException e) {
-//            return "Элемент введен неверно.";
-//        }
-//        return "И как же это вообще вылезло?";
-//    }
 
     /**
      * Сортирует коллекцию в обратном порядке
      */
-    String reorder() {
-        if (characters.isEmpty()) {
-            return "Коллекция пуста.";
-        } else {
-            Collections.reverse(characters);
-            return "Коллекция отсортирована.";
-        }
-    }
+//    String reorder() {
+//        if (characters.isEmpty()) {
+//            return "Коллекция пуста.";
+//        } else {
+//            Collections.reverse(characters);
+//            return "Коллекция отсортирована.";
+//        }
+//    }
 
     /**
      * Удаляет первый элемент коллекции
      */
     String removeFirst() {
-        if (characters.isEmpty()) {
+        if (reader.checkIfTableIsEmpty()) {
             return "Невозможно удалить первый элемент. Коллекция пуста.";
         } else {
-            characters.remove(0);
-            return "Первый элемент удален.";
+            //characters.remove(0);
+            return reader.deleteFirst(userHash);
         }
     }
 
-    /**
-     * Удаляет указанный элемент коллекции
-     *
-     * @param jsonString Элемент коллекции, указанный в формате json
-     */
-    String remove(String jsonString) {
-        Gson gson = new Gson();
-        try {
-            Vector<Character> characterVector = gson.fromJson(jsonString, TypeToken.getParameterized(Vector.class, Character.class).getType());
-            for (Character ch : characterVector) {
-                if (characters.contains(ch)) {
-                    characters.remove(ch);
-                    return "Элемент удален.";
-                } else {
-                    return "В коллекции нет такого элемента.";
-                }
-            }
-        } catch (IllegalStateException | JsonSyntaxException e) {
-            return "Элемент введен неверно.";
-        }
-        return "";
-    }
 
     String remove(Character character) {
         try {
-            for (Character ch : characters) {
-                if (characters.contains(ch)) {
-                    characters.remove(ch);
-                    return "Элемент удален.";
+                if (reader.checkIfCharacterExists(character)) {
+                    return reader.deleteCharacter(character, userHash);
                 } else {
                     return "В коллекции нет такого элемента.";
                 }
-            }
         } catch (IllegalStateException e) {
             return "Элемент введен неверно.";
         }
-        return "";
     }
 
     /**
@@ -172,6 +137,7 @@ class CollectionManager {
     String load() {
         try {
             characters = this.fileManager.convertFromXML(this.fileManager.readFromFile());
+            sort();
             return "Файл перезагружен";
         } catch (com.thoughtworks.xstream.io.StreamException e) {
             characters = new Vector<>();
@@ -192,6 +158,21 @@ class CollectionManager {
             }
         }
         return "";
+    }
+
+     String sort() {
+        // characters = characters.stream().sorted(new CharacterComparator()).collect(Collectors.toCollection(Vector::new));
+        reader.sort();
+        return "Коллекция отсортирована.";
+    }
+
+    /**
+     * Получение информации о командах
+     */
+    String getInformation() {
+        return "add - Добавляет элемент в коллекцию." + "\nreorder - Сортирует коллекцию в обратном порядке." + "\ninfo - Выводит информацию о коллекции."
+        + "\nremove_first - Удаляет первый элемент коллекции." + "\nload - Перезагружает коллекцию из файла." + "\nremove - Удаляет элемент из коллекции."
+        + "\nshow - Выводит содержимое коллекции." + "\nsave - сохраняет коллекцию в файл.";
     }
 
 }
